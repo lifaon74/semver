@@ -5,12 +5,15 @@ import { serializeSemVer } from './functions.private/serialize-semver.js';
 import { ISemVerCompareMode } from './types/semver-compare-mode.type.js';
 import { ISemVerIncrementRelease } from './types/semver-increment-release.type.js';
 import { ISemVerInput } from './types/semver-input.type.js';
+import { ISemVer } from './types/semver.type.js';
 
 /**
+ * A class to parse and manage semver.
+ *
  * @inheritDoc https://semver.org/
  * @inheritDoc https://github.com/npm/node-semver/blob/main/classes/semver.js
  */
-export class SemVer {
+export class SemVer implements ISemVer {
   static of(input: ISemVerInput): SemVer {
     if (input instanceof SemVer) {
       return input;
@@ -68,14 +71,35 @@ export class SemVer {
     return this.#build;
   }
 
+  /**
+   * Compares this SemVer with the input `input`:
+   * - if this semver is equal to `input`, returns `0`
+   * - if this semver is greater than `input`, returns `-1`
+   * - if this semver is lower than `input`, returns `1`
+   *
+   * @example:
+   * `ǹew Semver('1.2.3').compare('1.2.4')` => `-1`
+   *
+   * @param input The input to compare with this SemVer.
+   * @param compareMode Compares the version, the prerelease, the build, or a mix.
+   */
   compare(input: ISemVerInput, compareMode?: ISemVerCompareMode): number {
     return compareSemVer(this, SemVer.of(input), compareMode);
   }
 
+  /**
+   * Increments this SemVer.
+   *
+   * @param release The kind of increment to apply.
+   * @returns A new `SemVer` with the incremented version.
+   */
   increment(release: ISemVerIncrementRelease): SemVer {
     return new SemVer(incrementSemVer(this, release));
   }
 
+  /**
+   * Converts this SemVer to a valid semver string.
+   */
   toString(): string {
     return serializeSemVer(this);
   }

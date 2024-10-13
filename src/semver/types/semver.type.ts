@@ -1,3 +1,6 @@
+/**
+ * An interface describing the parts of a semver.
+ */
 export interface ISemVer {
   readonly major: number;
   readonly minor: number;
